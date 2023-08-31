@@ -36,5 +36,6 @@ def get_vacancies(dish_title: str):
         }
         result.append(dish_obj)
       
+      
     return result
 
