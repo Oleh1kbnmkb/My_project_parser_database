@@ -1,5 +1,6 @@
 import os
 import logging
+import asyncio
 from states import*
 from dotenv import load_dotenv
 from parse import get_vacancies
@@ -61,13 +62,13 @@ async def show_saved_dishes(message: types.Message):
 
 @dp.message_handler(commands='start')
 async def start_process(message: types.Message):
-    user = await db.check_user(message.from_id)
+    user = await db.check_user(message.from_user.id)
     if not user:
         await db.register_user(
             message.from_user.first_name,
             message.from_user.last_name,
             message.from_user.username,
-            message.from_id
+            message.from_user.id
         )
         await message.answer('Вітаю! 🌟 Ви успішно були зареєстровані.\nВведіть одним або двома словами у пошук будь-яку українську страву, яку хочете приготувати.🍲👨‍🍳')
     else:
@@ -161,9 +162,10 @@ async def get_my_dishes(message: types.Message):
 
 
 async def on_startup(dp):
-     await set_default_commands(dp)
+    loop = asyncio.get_event_loop()
+    await set_default_commands(dp)
 
 
-
+loop = asyncio.get_event_loop()
 if __name__ == "__main__":
-  executor.start_polling(dp, on_startup=on_startup)
+  executor.start_polling(dp, loop=loop, on_startup=on_startup)
